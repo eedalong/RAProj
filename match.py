@@ -38,7 +38,8 @@ def match_name(name, index_dict, removed_token):
             if sameCompany(name, candidate[1], removed_token):
                 return candidate
     return None
-processed_files = [f"indivs{0:02d}.txt".format(index) for index in range(0, 18, 2)] + [f"indivs{0:02d}.txt".format(index) for index in range(90, 100, 2)]
+processed_files = ["indivs{0:02d}.txt".format(index) for index in range(0, 18, 2)] + ["indivs{0:02d}.txt".format(index) for index in range(90, 100, 2)]
+print(processed_files)
 activist_file = open("cleaned_activist_list.csv")
 activist_reader = list(csv.reader(activist_file))
 removed_token = find_meaningless_token(activist_reader)
@@ -49,6 +50,7 @@ res_file = open("res_file", "w")
 matched_count = 0
 total_count = 0
 for file in processed_files:
+    print("check processing file", file)
     if not os.path.exists(file):
         continue
     with open(file, encoding="utf8") as input_file:
@@ -59,13 +61,13 @@ for file in processed_files:
                 break
             except Exception as e:
                 print(e)
+                continue
             data = line.split("|")
             data = list(filter(lambda x: x!="," and x!='\n', data))
-            if data[0] == "":
-                data = data[1:]
             if len(data) < 20:
                 continue
-
+            if data[0] == "":
+                data = data[1:]
             candidate = match_name(data[5].upper(), index_dict=index_dict, removed_token=removed_token) or \
                         match_name(data[6].upper(), index_dict=index_dict, removed_token=removed_token) or \
                         match_name(data[-2].upper(), index_dict=index_dict, removed_token=removed_token)
