@@ -11,12 +11,19 @@ while(True):
     data = line1.split("|")
     data = list(filter(lambda x: x != "," and x != '\n', data))[1:]
     tmp = data[8].split(",")
-    data[8] = tmp[0]
+    try:
+        assert len(tmp) == 4
+    except:
+        continue
+    data[8] = tmp[1]
+
     if len(tmp) > 1:
-        data.insert(9, tmp[1])
+        data.insert(9, tmp[2])
     data2 = line2[1:].split("|")[1:]
-    data2[-1] = data2[-1][-1]
+
+    data2[-1] = data2[-1][:-1]
     data.extend(data2)
+
     csv_writer.writerow(data)
 
 res_file.close()

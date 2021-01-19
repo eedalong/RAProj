@@ -22,23 +22,38 @@ def build_index(all_data, removed_token):
                 index_dict[token] = []
             index_dict[token].append(item)
     return index_dict
+def company_name_match(name_a, name_b, removed_token):
 
+    name_a = name_a.replace(".", "").replace(",","")
+    name_b = name_b.replace(".", "").replace(",","")
+
+    token_a = set(name_a.upper().split())
+    token_b = set(name_b.upper().split())
+    token_a -= removed_token
+    token_b -= removed_token
+
+    if len(token_a.union(token_b)) == 0:
+        return 0
+
+    score = (len(token_a.intersection(token_b)) * 1.0 / len(token_a.union(token_b))) * 100
+
+    return score > 60
 def sameCompany(name1, name2, removed_token):
     item1 = set(name1.upper().replace("/", " ").replace(",", " ").split())
     item2 = set(name2.upper().replace("/", " ").replace(",", " ").split())
     item1 -= removed_token
     item2 -= removed_token
-    return len(item1.intersection(item2)) * 1.0/ len(item2.union(item1)) > 0.5
+    return len(item1.intersection(item2)) * 1.0/ len(item2.union(item1)) > 0.8
 def match_name(name, index_dict, removed_token):
     item = set(name.upper().replace("/", " ").replace(",", " ").split())
     item -= removed_token
     for token in item:
         candidates = index_dict.get(token, [])
         for candidate in candidates:
-            if sameCompany(name, candidate[1], removed_token):
+            if company_name_match(name, candidate[1], removed_token):
                 return candidate
     return None
-processed_files = ["indivs{0:02d}.txt".format(index) for index in range(0, 18, 2)] + ["indivs{0:02d}.txt".format(index) for index in range(90, 100, 2)]
+processed_files = ["indivs{0:02d}.txt".format(index) for index in range(00, 20, 2)] + ["indivs{0:02d}.txt".format(index) for index in range(90, 100, 2)]
 print(processed_files)
 activist_file = open("cleaned_activist_list.csv")
 activist_reader = list(csv.reader(activist_file))
@@ -50,9 +65,10 @@ res_file = open("res_file", "w")
 matched_count = 0
 total_count = 0
 for file in processed_files:
-    print("check processing file", file)
     if not os.path.exists(file):
         continue
+    print("check processing file", file)
+
     with open(file, encoding="utf8") as input_file:
         while True:
             try:
@@ -78,7 +94,7 @@ for file in processed_files:
                 matched_count += 1
             total_count += 1
             if total_count % 1000 == 0:
-                print(f"processed total_count {total_count} and match_count {matched_count}")
+                pass
 
         print(f"check for file {file} , matched_count is {matched_count}, totla_count is {total_count}, matched_rate = {matched_count*1.0/total_count}")
 
