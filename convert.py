@@ -1,6 +1,6 @@
 import csv
 input_file = open("res_file")
-res_file = open("convert_res.csv", "w", newline='')
+res_file = open("convert_res_08.csv", "w", newline='')
 csv_writer = csv.writer(res_file)
 while(True):
     try:

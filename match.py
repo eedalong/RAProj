@@ -94,9 +94,9 @@ for file in processed_files:
                 matched_count += 1
             total_count += 1
             if total_count % 1000 == 0:
-                pass
+                print(f"process {total_count}, matched {matched_count}")
 
-        print(f"check for file {file} , matched_count is {matched_count}, totla_count is {total_count}, matched_rate = {matched_count*1.0/total_count}")
+        print(f"matched_count is {matched_count}, totla_count is {total_count}, matched_rate = {matched_count*1.0/total_count}")
 
 
 
