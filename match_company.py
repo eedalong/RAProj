@@ -1,12 +1,32 @@
 import csv
 def isCompanyName(name):
-    tokens = ["CORP", "LTD", "INC", "FUND", "CO", "LLC", "BANK", "PARTNERSHIP", "PARTNERS"]
-    name = name.upper()
+    tokens = ["CORP", "LTD", "INC", "FUND", "CO", "LLC", "BANK", "PARTNERSHIP", "PARTNERS",
+              "LP", "L.P", "LLP", "TRUST", "TRUSTEE", "FUND", "PLC","ADVISOR", "GROUP",
+              "INVESTMENT", "INVEST", "VENTURES", "BANK", "VC", "SPA", "COM", "/",
+              "HOLDINGS", "ESTATE", "EQUITY", "FOUNDATION", "HOMIES", "CAPITAL",
+              "INDUSTRIES", "COMMITTEE", "KEEPING", "AVV", "CONSORTIUM", "ASSET ",
+              "MANAGEMENT","ACQUISITION","ENTERPRISES","AKTIENGESELLSCHAFT",
+              "COMPUTER","INNOVATION","TECHNOLOGIES","SA", "AG", "&", "S A", "A G",
+              "L.L.C", "INSURANCE", "ASSOCIATION", "L P", "L L C", "S.A.", "-", "S.A",
+              "Interactive","Resources", "Reserve","Global","Cross","Federal","Financial",
+              "Association","Enterprise","Pharmaceuticals","Establishment","Center",
+              "N.V.","Research","TEL","TEST","THERAPEUTICS","ASSOCIATES","Portfolios",
+              "CREDIT","CREDITS","Venture","Holding","Energy","Health","Plan","Mutual",
+              "S.p.A.","Financial","Family","Debt","Insurance","International","FINANCE","REPUBLIC",
+              "PENSION","MHC","G.P.","L.L.C.","S.A.","tech",
+              "S.a.r.l.","Bhd","LABORATORIES","BNP","TECHNOLOGY","ELECTRONICS","PROPERTIES",
+              "SYSTEM","MEDICAL"
+              ]
+    name = name.upper().replace(" ", "")
     for token in tokens:
-        if token in name:
+        if token.upper() in name:
             return True
+        try:
+            int(token)
+            return True
+        except:
+            pass
     return False
-
 def build_index(all_data, removed_token):
     index_dict = {}
     for item in all_data:
@@ -51,7 +71,7 @@ if __name__ == "__main__":
     csv_reader = csv.reader(company_name_file)
     all_companys = list(csv_reader)
     index_dict = build_index(all_companys, set([]))
-    out_file = open("matched_company.csv", newline="", mode="w")
+    out_file = open("cleaned_activist.csv", newline="", mode="w")
     csv_writer = csv.writer(out_file)
 
     activist_reader = csv.reader(open('activist_list.csv'))
@@ -63,16 +83,21 @@ if __name__ == "__main__":
     for line in activist_reader:
         res = match_name(line[1], index_dict, removed_token=set([]))
         if res:
+            # 公司名字
             data = line + [1] + res
         elif isCompanyName(line[1]):
+            # 机构
             data = line + [1] + ["", ""]
         else:
-            data = line + [0] + ["", ""]
+            continue
+            #data = line + [0] + ["", ""]
+
         csv_writer.writerow(data)
         if index % 10 == 0:
             print(index)
 
         index += 1
     out_file.close()
+
 
 
